@@ -3,6 +3,39 @@ alwaysApply: true
 ---
 
 Always use shadcn ui components
+
 Always follow the folder structure and pattern already used in the project.
+
 Never create index files just to export things.
+
+Never use React.FC to declare the types of the Props
+
 Never do beyond what is asked like creating demo pages and modifying readmes.
+
+# Project Tech Requirements
+
+Before implementing code, read through these to make sure you follow our coding guide.
+
+## NPM Requirements
+
+when trying to install packages, always use pnpm. I do not use bun or yarn.
+
+## Component System
+
+We are using ShadCN for our component library, always check if there is an existing shadcn component first and try to install one before trying to implement you own.
+
+## Form Library
+
+We are using react-hook-form with client side validation using zod. Make sure all forms have some type of client side validation
+
+## Loader Buttons
+
+All buttons should show a loader spinner inside them while the form is being submitted
+
+## Data Fetching
+
+We should always use useQuery and useMutation when trying to fetch or store data.
+
+# Design
+
+All pages should work with light mode and dark mode in mind. Never hard code any colors without also providing the light / dark mode equivalent. Always use the variables for the colors.
