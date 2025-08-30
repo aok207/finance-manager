@@ -38,7 +38,7 @@ export default function DashboardNavigation() {
             return (
               <Button
                 key={item.name}
-                variant={item.active ? "default" : "ghost"}
+                variant={"ghost"}
                 className={cn(
                   "text-white px-2 py-1 rounded-md hover:bg-accent/20 hover:text-white transition-colors duration-200",
                   isActive && "bg-accent/20"
