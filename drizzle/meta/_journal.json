@@ -15,6 +15,20 @@
       "when": 1756549390993,
       "tag": "0001_chubby_bastion",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1756632342735,
+      "tag": "0002_lethal_stranger",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1756633244829,
+      "tag": "0003_tidy_jubilee",
+      "breakpoints": true
     }
   ]
 }

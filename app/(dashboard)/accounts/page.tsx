@@ -1,9 +1,4 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { db } from "@/db";
-import { balanceAccount } from "@/db/schemas/account-schema";
-import { eq, ilike, desc, and } from "drizzle-orm";
 import AccountsPage from "@/modules/accounts/pages/accounts-page";
 import { getAccounts } from "@/modules/accounts/api/queries";
 
