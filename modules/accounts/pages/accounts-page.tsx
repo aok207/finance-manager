@@ -1,24 +1,12 @@
-import { Input } from "@/components/ui/input";
 import React from "react";
 import AccountsTable from "../ui/components/accounts-table";
-import { BalanceAccount } from "@/db/schemas/account-schema";
 import { AddAccountDialog } from "../ui/components/add-account-dialog";
 
 interface AccountsPageProps {
-  accounts: BalanceAccount[];
-  totalCount: number;
-  currentPage: number;
-  pageSize: number;
-  searchQuery: string;
+  accounts: { id: string; name: string }[];
 }
 
-const AccountsPage = ({
-  accounts,
-  totalCount,
-  currentPage,
-  pageSize,
-  searchQuery,
-}: AccountsPageProps) => {
+const AccountsPage = ({ accounts }: AccountsPageProps) => {
   return (
     <div className="w-full flex flex-col gap-4">
       <div className="w-full flex justify-between items-center">
@@ -26,13 +14,7 @@ const AccountsPage = ({
         <AddAccountDialog />
       </div>
 
-      <AccountsTable
-        accounts={accounts}
-        totalCount={totalCount}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        searchQuery={searchQuery}
-      />
+      <AccountsTable accounts={accounts} />
     </div>
   );
 };

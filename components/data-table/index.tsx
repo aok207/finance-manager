@@ -6,6 +6,8 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
+  ColumnFiltersState,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 
 import {
@@ -19,25 +21,28 @@ import {
 import { useState } from "react";
 import { DataTablePagination } from "./pagination";
 import { TableSkeleton } from "./table-skeleton";
+import { Input } from "../ui/input";
+import { Search, Trash } from "lucide-react";
+import { Button } from "../ui/button";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[] | undefined;
-  totalResult: number;
-  pagination: { pageIndex: number; pageSize: number };
-  setPagination: React.Dispatch<
-    React.SetStateAction<{ pageIndex: number; pageSize: number }>
-  >;
+  filterKey: string;
+  onBulkDelete?: (selectedRows: TData[]) => void;
+  disabled?: boolean;
 }
 
 const DataTable = <TData, TValue>({
   columns,
   data,
-  totalResult,
-  pagination,
-  setPagination,
+  filterKey,
+  onBulkDelete,
+  disabled = false,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data: data || [],
@@ -46,18 +51,54 @@ const DataTable = <TData, TValue>({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
-    manualPagination: true,
-    manualFiltering: true,
-    rowCount: totalResult,
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
-      pagination,
+      columnFilters,
+      rowSelection,
     },
   });
 
   return (
     <div>
+      <div className="flex items-center justify-between py-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+
+          <Input
+            placeholder={`Filter ${filterKey}...`}
+            value={
+              (table.getColumn(filterKey)?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn(filterKey)?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm w-full pl-10"
+          />
+        </div>
+
+        {onBulkDelete &&
+          table.getFilteredSelectedRowModel().rows.length > 0 && (
+            <Button
+              variant={"destructive"}
+              size={"sm"}
+              disabled={disabled}
+              onClick={() =>
+                onBulkDelete?.(
+                  table
+                    .getFilteredSelectedRowModel()
+                    .rows.map((row) => row.original)
+                )
+              }
+            >
+              <Trash /> {disabled ? "Deleting..." : "Delete"} (
+              {table.getFilteredSelectedRowModel().rows.length})
+            </Button>
+          )}
+      </div>
+
       <div className="mt-5 rounded-md border">
         {data === undefined ? (
           <TableSkeleton />

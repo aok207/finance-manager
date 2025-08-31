@@ -56,6 +56,11 @@ export function DataTablePagination<TData>({
         </div>
       </div>
 
+      <div className="text-muted-foreground flex-shrink-0 text-sm">
+        {table.getFilteredSelectedRowModel().rows.length} of{" "}
+        {table.getFilteredRowModel().rows.length} row(s) selected
+      </div>
+
       <div className="flex items-center sm:space-x-6 lg:space-x-8">
         <div className="flex w-[100px] items-center justify-center text-sm font-medium @max-3xl/main:hidden">
           Page {currentPage} of {totalPages}

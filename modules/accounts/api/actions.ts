@@ -5,7 +5,7 @@ import { balanceAccount } from "@/db/schemas/account-schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 
 export async function createAccount(name: string) {
   try {
@@ -89,5 +89,32 @@ export async function deleteAccount(id: string) {
   } catch (error) {
     console.error("Error deleting account:", error);
     return { success: false, error: "Failed to delete account" };
+  }
+}
+
+export async function bulkDeleteAccounts(ids: string[]) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      throw new Error("Unauthorized");
+    }
+
+    await db
+      .delete(balanceAccount)
+      .where(
+        and(
+          eq(balanceAccount.userId, session.user.id),
+          inArray(balanceAccount.id, ids)
+        )
+      );
+
+    revalidatePath("/accounts");
+    return { success: true };
+  } catch (error) {
+    console.error("Error bulk deleting accounts:", error);
+    return { success: false, error: "Failed to bulk delete accounts" };
   }
 }

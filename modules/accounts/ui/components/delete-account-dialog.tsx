@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { deleteAccount } from "@/app/api/accounts/actions";
+import { deleteAccount } from "@/modules/accounts/api/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { BalanceAccount } from "@/db/schemas/account-schema";
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface DeleteAccountDialogProps {
-  account: BalanceAccount;
+  account: { id: string; name: string };
 }
 
 export function DeleteAccountDialog({ account }: DeleteAccountDialogProps) {

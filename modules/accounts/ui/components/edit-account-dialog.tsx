@@ -13,9 +13,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 interface EditAccountDialogProps {
-  account: BalanceAccount;
+  account: { id: string; name: string };
 }
 
 export function EditAccountDialog({ account }: EditAccountDialogProps) {

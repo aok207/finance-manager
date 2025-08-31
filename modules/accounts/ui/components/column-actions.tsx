@@ -14,7 +14,7 @@ import {
 import { EditAccountDialog } from "./edit-account-dialog";
 import { DeleteAccountDialog } from "./delete-account-dialog";
 
-function ColumnActions({ account }: { account: BalanceAccount }) {
+function ColumnActions({ account }: { account: { id: string; name: string } }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
