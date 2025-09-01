@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { category } from "@/db/schemas/category-schema";
+import { categories } from "@/db/schemas/category-schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -18,7 +18,7 @@ export async function createCategory(name: string) {
     }
 
     const newCategory = await db
-      .insert(category)
+      .insert(categories)
       .values({
         name,
         userId: session.user.id,
@@ -44,12 +44,12 @@ export async function updateCategory(id: string, name: string) {
     }
 
     const updatedCategory = await db
-      .update(category)
+      .update(categories)
       .set({
         name,
         updatedAt: new Date(),
       })
-      .where(and(eq(category.id, id), eq(category.userId, session.user.id)))
+      .where(and(eq(categories.id, id), eq(categories.userId, session.user.id)))
       .returning();
 
     revalidatePath("/categories");
@@ -71,8 +71,10 @@ export async function deleteCategory(id: string) {
     }
 
     await db
-      .delete(category)
-      .where(and(eq(category.id, id), eq(category.userId, session.user.id)));
+      .delete(categories)
+      .where(
+        and(eq(categories.id, id), eq(categories.userId, session.user.id))
+      );
 
     revalidatePath("/categories");
     return { success: true };
@@ -93,9 +95,9 @@ export async function bulkDeleteCategories(ids: string[]) {
     }
 
     await db
-      .delete(category)
+      .delete(categories)
       .where(
-        and(eq(category.userId, session.user.id), inArray(category.id, ids))
+        and(eq(categories.userId, session.user.id), inArray(categories.id, ids))
       );
 
     revalidatePath("/categories");

@@ -13,8 +13,10 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
+import { relations } from "drizzle-orm";
+import { transactions } from "./transaction-schema";
 
-export const category = pgTable(
+export const categories = pgTable(
   "categories",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -30,4 +32,8 @@ export const category = pgTable(
   ]
 );
 
-export type BalanceAccount = typeof category.$inferSelect;
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  transactions: many(transactions),
+}));
+
+export type BalanceAccount = typeof categories.$inferSelect;

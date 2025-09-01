@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { category } from "@/db/schemas/category-schema";
+import { categories as categoriesSchema } from "@/db/schemas/category-schema";
 import { auth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -21,10 +21,10 @@ export async function getCategories(): Promise<{
   }
 
   const categories = await db
-    .select({ id: category.id, name: category.name })
-    .from(category)
-    .where(eq(category.userId, session.user.id))
-    .orderBy(category.name);
+    .select({ id: categoriesSchema.id, name: categoriesSchema.name })
+    .from(categoriesSchema)
+    .where(eq(categoriesSchema.userId, session.user.id))
+    .orderBy(categoriesSchema.name);
 
   return {
     success: true,

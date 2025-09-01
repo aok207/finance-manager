@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { balanceAccount, BalanceAccount } from "@/db/schemas/account-schema";
+import { balanceAccounts, BalanceAccount } from "@/db/schemas/account-schema";
 import { auth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -21,10 +21,10 @@ export async function getAccounts(): Promise<{
   }
 
   const accounts = await db
-    .select({ id: balanceAccount.id, name: balanceAccount.name })
-    .from(balanceAccount)
-    .where(eq(balanceAccount.userId, session.user.id))
-    .orderBy(balanceAccount.name);
+    .select({ id: balanceAccounts.id, name: balanceAccounts.name })
+    .from(balanceAccounts)
+    .where(eq(balanceAccounts.userId, session.user.id))
+    .orderBy(balanceAccounts.name);
 
   return {
     success: true,

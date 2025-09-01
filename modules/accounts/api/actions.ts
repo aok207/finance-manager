@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { balanceAccount } from "@/db/schemas/account-schema";
+import { balanceAccounts } from "@/db/schemas/account-schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -18,7 +18,7 @@ export async function createAccount(name: string) {
     }
 
     const newAccount = await db
-      .insert(balanceAccount)
+      .insert(balanceAccounts)
       .values({
         name,
         userId: session.user.id,
@@ -44,15 +44,15 @@ export async function updateAccount(id: string, name: string) {
     }
 
     const updatedAccount = await db
-      .update(balanceAccount)
+      .update(balanceAccounts)
       .set({
         name,
         updatedAt: new Date(),
       })
       .where(
         and(
-          eq(balanceAccount.id, id),
-          eq(balanceAccount.userId, session.user.id)
+          eq(balanceAccounts.id, id),
+          eq(balanceAccounts.userId, session.user.id)
         )
       )
       .returning();
@@ -76,11 +76,11 @@ export async function deleteAccount(id: string) {
     }
 
     await db
-      .delete(balanceAccount)
+      .delete(balanceAccounts)
       .where(
         and(
-          eq(balanceAccount.id, id),
-          eq(balanceAccount.userId, session.user.id)
+          eq(balanceAccounts.id, id),
+          eq(balanceAccounts.userId, session.user.id)
         )
       );
 
@@ -103,11 +103,11 @@ export async function bulkDeleteAccounts(ids: string[]) {
     }
 
     await db
-      .delete(balanceAccount)
+      .delete(balanceAccounts)
       .where(
         and(
-          eq(balanceAccount.userId, session.user.id),
-          inArray(balanceAccount.id, ids)
+          eq(balanceAccounts.userId, session.user.id),
+          inArray(balanceAccounts.id, ids)
         )
       );
 
