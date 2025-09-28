@@ -21,7 +21,6 @@ const navigationItems = [
   },
   { name: "Accounts", href: "/accounts", icon: Wallet },
   { name: "Categories", href: "/categories", icon: PieChart },
-  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export default function DashboardNavigation() {

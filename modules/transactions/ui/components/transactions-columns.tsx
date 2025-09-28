@@ -10,7 +10,11 @@ export const columns: ColumnDef<{
   amount: number;
   payee: string;
   accountId: string;
+  categoryId?: string | null;
   note: string | null;
+  date: Date;
+  account: { id: string; name: string } | null;
+  category: { id: string; name: string } | null;
 }>[] = [
   {
     id: "select",
@@ -35,6 +39,16 @@ export const columns: ColumnDef<{
     enableHiding: false,
   },
   {
+    accessorKey: "date",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Date" />
+    ),
+    cell: ({ row }) => {
+      const date = new Date(row.original.date);
+      return date.toLocaleDateString();
+    },
+  },
+  {
     accessorKey: "payee",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Payee" />
@@ -45,12 +59,42 @@ export const columns: ColumnDef<{
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Amount" />
     ),
+    cell: ({ row }) => {
+      const amount = row.original.amount;
+      const isIncome = amount > 0;
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "MMK",
+        minimumFractionDigits: 0,
+      }).format(Math.abs(amount));
+
+      return (
+        <span className={isIncome ? "text-green-600" : "text-red-600"}>
+          {isIncome ? "+" : "-"}
+          {formatted}
+        </span>
+      );
+    },
   },
   {
-    accessorKey: "accountId",
+    accessorKey: "account.name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Account" />
     ),
+    cell: ({ row }) => {
+      const account = row.original.account;
+      return account ? account.name : "Unknown Account";
+    },
+  },
+  {
+    accessorKey: "category.name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Category" />
+    ),
+    cell: ({ row }) => {
+      const category = row.original.category;
+      return category ? category.name : "No Category";
+    },
   },
   {
     accessorKey: "note",

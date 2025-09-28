@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
 import { EditTransactionForm } from "./edit-transaction-form";
@@ -12,6 +12,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { getAccounts } from "@/modules/accounts/api/queries";
+import { getCategories } from "@/modules/categories/api/queries";
+import { Spinner } from "@/modules/auth/ui/components/spinner";
 
 interface EditTransactionDialogProps {
   transaction: {
@@ -19,7 +22,11 @@ interface EditTransactionDialogProps {
     amount: number;
     payee: string;
     accountId: string;
+    categoryId?: string | null;
     note?: string | null;
+    date: Date;
+    account: { id: string; name: string } | null;
+    category: { id: string; name: string } | null;
   };
 }
 
@@ -27,6 +34,45 @@ export function EditTransactionDialog({
   transaction,
 }: EditTransactionDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [accountOptions, setAccountOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [categoryOptions, setCategoryOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchOptions() {
+      try {
+        const [accountsRes, categoriesRes] = await Promise.all([
+          getAccounts(),
+          getCategories(),
+        ]);
+
+        const accounts = (accountsRes.data ?? []).map((account) => ({
+          label: account.name,
+          value: account.id,
+        }));
+
+        const categories = (categoriesRes.data ?? []).map((category) => ({
+          label: category.name,
+          value: category.id,
+        }));
+
+        setAccountOptions(accounts);
+        setCategoryOptions(categories);
+      } catch (error) {
+        console.error("Failed to fetch options:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (isOpen) {
+      fetchOptions();
+    }
+  }, [isOpen]);
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -44,10 +90,18 @@ export function EditTransactionDialog({
           </SheetDescription>
         </SheetHeader>
         <div className="mt-6 px-4">
-          <EditTransactionForm
-            transaction={transaction}
-            onClose={() => setIsOpen(false)}
-          />
+          {isLoading ? (
+            <div className="flex items-center justify-center p-4">
+              <Spinner />
+            </div>
+          ) : (
+            <EditTransactionForm
+              transaction={transaction}
+              accountOptions={accountOptions}
+              categoryOptions={categoryOptions}
+              onClose={() => setIsOpen(false)}
+            />
+          )}
         </div>
       </SheetContent>
     </Sheet>

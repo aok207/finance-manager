@@ -2,6 +2,8 @@
 
 import { db } from "@/db";
 import { transactions as transactionsSchema } from "@/db/schemas/transaction-schema";
+import { balanceAccounts } from "@/db/schemas/account-schema";
+import { categories } from "@/db/schemas/category-schema";
 import { auth } from "@/lib/auth";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -35,8 +37,28 @@ export async function getTransactions(args: GetTransactionsArgs = {}) {
   }
 
   const transactions = await db
-    .select()
+    .select({
+      id: transactionsSchema.id,
+      amount: transactionsSchema.amount,
+      payee: transactionsSchema.payee,
+      accountId: transactionsSchema.accountId,
+      categoryId: transactionsSchema.categoryId,
+      note: transactionsSchema.note,
+      date: transactionsSchema.date,
+      createdAt: transactionsSchema.createdAt,
+      updatedAt: transactionsSchema.updatedAt,
+      account: {
+        id: balanceAccounts.id,
+        name: balanceAccounts.name,
+      },
+      category: {
+        id: categories.id,
+        name: categories.name,
+      },
+    })
     .from(transactionsSchema)
+    .leftJoin(balanceAccounts, eq(transactionsSchema.accountId, balanceAccounts.id))
+    .leftJoin(categories, eq(transactionsSchema.categoryId, categories.id))
     .where(and(...whereClauses))
     .orderBy(transactionsSchema.createdAt);
 

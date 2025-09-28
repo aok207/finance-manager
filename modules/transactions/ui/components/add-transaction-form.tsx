@@ -37,7 +37,7 @@ const transactionFormSchema = z.object({
     .max(100, "Payee must be less than 100 characters")
     .trim(),
   accountId: z.string().min(1, "Account is required"),
-  categoryId: z.string().min(1, "Category is required"),
+  categoryId: z.string(),
   note: z
     .string()
     .max(255, "Note must be less than 255 characters")
@@ -68,7 +68,9 @@ export function AddTransactionForm({
       amount: 0,
       payee: "",
       accountId: "",
+      categoryId: "",
       note: "",
+      date: new Date(),
     },
   });
 
@@ -80,7 +82,9 @@ export function AddTransactionForm({
         amount: values.amount,
         payee: values.payee,
         accountId: values.accountId,
+        categoryId: values.categoryId,
         note: values.note || null,
+        date: values.date,
       });
 
       if (result.success) {

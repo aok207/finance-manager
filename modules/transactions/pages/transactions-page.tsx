@@ -3,6 +3,7 @@ import TransactionsTable from "../ui/components/transactions-table";
 import { AddTransactionDialog } from "../ui/components/add-transaction-dialog";
 import { getCategories } from "@/modules/categories/api/queries";
 import { getAccounts } from "@/modules/accounts/api/queries";
+import FilterDropdowns from "@/modules/dashboard/ui/components/filter-dropdowns";
 
 interface TransactionsPageProps {
   transactions: {
@@ -10,17 +11,30 @@ interface TransactionsPageProps {
     amount: number;
     payee: string;
     accountId: string;
+    categoryId?: string | null;
     note: string | null;
+    date: Date;
+    account: { id: string; name: string } | null;
+    category: { id: string; name: string } | null;
   }[];
+  selectedAccountId: string;
+  selectedPeriod: string;
+  dateRange: { from: Date; to: Date };
 }
 
-const TransactionsPage = async ({ transactions }: TransactionsPageProps) => {
+const TransactionsPage = async ({
+  transactions,
+  selectedAccountId,
+  selectedPeriod,
+  dateRange,
+}: TransactionsPageProps) => {
   const { data: categories } = await getCategories();
 
   const categoriesOptions = (categories ?? []).map((category) => ({
     label: category.name,
     value: category.id,
   }));
+
   const { data: accounts } = await getAccounts();
 
   const accountsOptions = (accounts ?? []).map((account) => ({
@@ -37,6 +51,13 @@ const TransactionsPage = async ({ transactions }: TransactionsPageProps) => {
           accounts={accountsOptions}
         />
       </div>
+
+      <FilterDropdowns
+        accounts={accounts ?? []}
+        selectedAccountId={selectedAccountId}
+        selectedPeriod={selectedPeriod}
+        dateRange={dateRange}
+      />
 
       <TransactionsTable transactions={transactions} />
     </div>

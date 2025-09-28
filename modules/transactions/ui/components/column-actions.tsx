@@ -23,7 +23,11 @@ function ColumnActions({
     amount: number;
     payee: string;
     accountId: string;
+    categoryId?: string | null;
     note?: string | null;
+    date: Date;
+    account: { id: string; name: string } | null;
+    category: { id: string; name: string } | null;
   };
 }) {
   // const categories = await getCategories();

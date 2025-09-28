@@ -26,18 +26,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import AmountInput from "./amount-input";
 
 const transactionFormSchema = z.object({
-  amount: z
-    .number({ error: "Amount is required" })
-    .min(0.01, "Amount must be greater than 0"),
+  amount: z.number({ error: "Amount is required" }),
   payee: z
     .string()
     .min(1, "Payee is required")
     .max(100, "Payee must be less than 100 characters")
     .trim(),
   accountId: z.string().min(1, "Account is required"),
-  categoryId: z.string().min(1, "Category is required"),
+  categoryId: z.string(),
   note: z
     .string()
     .max(255, "Note must be less than 255 characters")
@@ -135,14 +134,10 @@ export function EditTransactionForm({
             <FormItem>
               <FormLabel>Amount</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="Enter amount"
-                  disabled={isLoading}
+                <AmountInput
+                  disabled={isLoading || form.formState.isSubmitting}
+                  onChange={field.onChange}
                   value={field.value}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
               <FormMessage />
@@ -162,7 +157,7 @@ export function EditTransactionForm({
                   value={field.value}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select account" />
                   </SelectTrigger>
                   <SelectContent>
@@ -191,7 +186,7 @@ export function EditTransactionForm({
                   value={field.value}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>

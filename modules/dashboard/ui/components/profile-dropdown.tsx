@@ -45,7 +45,7 @@ const ProfileDropdown = ({
           <p className="text-sm font-medium">{user.name || "User"}</p>
           <p className="text-xs text-muted-foreground">{user.email}</p>
         </div>
-        <DropdownMenuSeparator />
+        {/* <DropdownMenuSeparator />
         <DropdownMenuItem>
           <User className="mr-2 h-4 w-4" />
           Profile
@@ -53,7 +53,7 @@ const ProfileDropdown = ({
         <DropdownMenuItem>
           <Settings className="mr-2 h-4 w-4" />
           Settings
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />

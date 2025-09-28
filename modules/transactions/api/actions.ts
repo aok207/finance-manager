@@ -11,12 +11,16 @@ export async function createTransaction({
   amount,
   payee,
   accountId,
+  categoryId,
   note,
+  date,
 }: {
   amount: number;
   payee: string;
   accountId: string;
+  categoryId?: string | null;
   note?: string | null;
+  date?: Date;
 }) {
   try {
     const session = await auth.api.getSession({
@@ -33,7 +37,9 @@ export async function createTransaction({
         amount,
         payee,
         accountId,
+        categoryId: categoryId || null,
         note: note ?? null,
+        date: date ?? new Date(),
         userId: session.user.id,
       })
       .returning();
@@ -52,11 +58,13 @@ export async function updateTransaction(
     amount,
     payee,
     accountId,
+    categoryId,
     note,
   }: {
     amount: number;
     payee: string;
     accountId: string;
+    categoryId?: string | null;
     note?: string | null;
   }
 ) {
@@ -75,6 +83,7 @@ export async function updateTransaction(
         amount,
         payee,
         accountId,
+        categoryId: categoryId || null,
         note: note ?? null,
         updatedAt: new Date(),
       })
