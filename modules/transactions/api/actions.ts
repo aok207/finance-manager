@@ -55,12 +55,14 @@ export async function createTransaction({
 export async function updateTransaction(
   id: string,
   {
+    date,
     amount,
     payee,
     accountId,
     categoryId,
     note,
   }: {
+    date: Date;
     amount: number;
     payee: string;
     accountId: string;
@@ -80,6 +82,7 @@ export async function updateTransaction(
     const updatedTransaction = await db
       .update(transactions)
       .set({
+        date,
         amount,
         payee,
         accountId,

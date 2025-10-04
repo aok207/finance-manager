@@ -27,8 +27,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import AmountInput from "./amount-input";
+import { DatePicker } from "@/components/date-picker";
 
 const transactionFormSchema = z.object({
+  date: z.date({ error: "Date is required" }).min(1, "Date is required"),
   amount: z.number({ error: "Amount is required" }),
   payee: z
     .string()
@@ -54,6 +56,7 @@ interface EditTransactionFormProps {
     accountId: string;
     categoryId?: string | null;
     note?: string | null;
+    date: Date;
   };
   accountOptions: { label: string; value: string }[];
   categoryOptions: { label: string; value: string }[];
@@ -77,6 +80,7 @@ export function EditTransactionForm({
       accountId: transaction.accountId,
       categoryId: transaction.categoryId ?? "",
       note: transaction.note ?? "",
+      date: transaction.date,
     },
   });
 
@@ -85,6 +89,7 @@ export function EditTransactionForm({
 
     try {
       const result = await updateTransaction(transaction.id, {
+        date: values.date,
         amount: values.amount,
         payee: values.payee,
         accountId: values.accountId,
@@ -111,33 +116,15 @@ export function EditTransactionForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="payee"
+          name="date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Payee</FormLabel>
+              <FormLabel>Date</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Enter payee"
-                  disabled={isLoading}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="amount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Amount</FormLabel>
-              <FormControl>
-                <AmountInput
-                  disabled={isLoading || form.formState.isSubmitting}
-                  onChange={field.onChange}
+                <DatePicker
                   value={field.value}
+                  onChange={field.onChange}
+                  className="w-full"
                 />
               </FormControl>
               <FormMessage />
@@ -197,6 +184,42 @@ export function EditTransactionForm({
                     ))}
                   </SelectContent>
                 </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="amount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Amount</FormLabel>
+              <FormControl>
+                <AmountInput
+                  disabled={isLoading || form.formState.isSubmitting}
+                  onChange={field.onChange}
+                  value={field.value}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="payee"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Payee</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter payee"
+                  disabled={isLoading}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
