@@ -5,7 +5,7 @@ import { transactions as transactionsSchema } from "@/db/schemas/transaction-sch
 import { balanceAccounts } from "@/db/schemas/account-schema";
 import { categories } from "@/db/schemas/category-schema";
 import { auth } from "@/lib/auth";
-import { eq, and, gte, lte } from "drizzle-orm";
+import { eq, and, gte, lte, desc } from "drizzle-orm";
 import { headers } from "next/headers";
 
 interface GetTransactionsArgs {
@@ -57,10 +57,13 @@ export async function getTransactions(args: GetTransactionsArgs = {}) {
       },
     })
     .from(transactionsSchema)
-    .leftJoin(balanceAccounts, eq(transactionsSchema.accountId, balanceAccounts.id))
+    .leftJoin(
+      balanceAccounts,
+      eq(transactionsSchema.accountId, balanceAccounts.id)
+    )
     .leftJoin(categories, eq(transactionsSchema.categoryId, categories.id))
     .where(and(...whereClauses))
-    .orderBy(transactionsSchema.createdAt);
+    .orderBy(desc(transactionsSchema.date));
 
   return {
     success: true,

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createTransaction } from "@/modules/transactions/api/actions";
+import { createCategory } from "@/modules/categories/api/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -26,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CreatableSelect } from "@/components/ui/createable-select";
 import AmountInput from "./amount-input";
 import { DatePicker } from "@/components/date-picker";
 
@@ -57,9 +59,10 @@ interface AddTransactionFormProps {
 export function AddTransactionForm({
   onClose,
   accounts,
-  categories,
+  categories: initialCategories,
 }: AddTransactionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [categories, setCategories] = useState(initialCategories);
   const router = useRouter();
 
   const form = useForm<TransactionFormValues>({
@@ -99,6 +102,30 @@ export function AddTransactionForm({
       toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCreateCategory = async (
+    name: string
+  ): Promise<string | undefined> => {
+    try {
+      const result = await createCategory(name);
+
+      if (result.success && result.category) {
+        const newCategory = {
+          label: result.category.name,
+          value: result.category.id,
+        };
+        setCategories((prev) => [...prev, newCategory]);
+        toast.success("Category created successfully");
+        return result.category.id;
+      } else {
+        toast.error(result.error || "Failed to create category");
+        return undefined;
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred while creating category");
+      return undefined;
     }
   };
 
@@ -158,21 +185,16 @@ export function AddTransactionForm({
             <FormItem>
               <FormLabel>Category</FormLabel>
               <FormControl>
-                <Select
+                <CreatableSelect
+                  options={categories}
+                  value={field.value}
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose Category..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onCreateOption={handleCreateCategory}
+                  placeholder="Choose Category..."
+                  searchPlaceholder="Search categories..."
+                  createLabel="Create category"
+                  disabled={isLoading}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

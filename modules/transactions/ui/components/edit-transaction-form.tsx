@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateTransaction } from "@/modules/transactions/api/actions";
+import { createCategory } from "@/modules/categories/api/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -26,8 +27,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CreatableSelect } from "@/components/ui/createable-select";
 import AmountInput from "./amount-input";
 import { DatePicker } from "@/components/date-picker";
+import CategoryCreatableSelect from "@/components/category-createable-select";
 
 const transactionFormSchema = z.object({
   date: z.date({ error: "Date is required" }).min(1, "Date is required"),
@@ -66,7 +69,7 @@ interface EditTransactionFormProps {
 export function EditTransactionForm({
   transaction,
   accountOptions,
-  categoryOptions,
+  categoryOptions: initialCategoryOptions,
   onClose,
 }: EditTransactionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -168,22 +171,12 @@ export function EditTransactionForm({
             <FormItem>
               <FormLabel>Category</FormLabel>
               <FormControl>
-                <Select
-                  disabled={isLoading}
+                <CategoryCreatableSelect
+                  initialCategoryOptions={initialCategoryOptions}
                   value={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categoryOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onChange={field.onChange}
+                  disabled={isLoading}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
