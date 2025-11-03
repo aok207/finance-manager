@@ -6,7 +6,10 @@ import {
   timestamp,
   uniqueIndex,
   integer,
+  decimal,
   index,
+  real,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 import { balanceAccounts } from "./account-schema";
@@ -17,7 +20,7 @@ export const transactions = pgTable(
   "transactions",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    amount: integer("amount").notNull(),
+    amount: doublePrecision("amount").notNull(),
     payee: varchar("payee").notNull(),
     accountId: uuid("account_id")
       .notNull()

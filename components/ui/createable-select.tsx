@@ -108,15 +108,13 @@ export function CreatableSelect({
         >
           {selectedOption ? selectedOption.label : placeholder}
           {selectedOption ? (
-            <Button
-              type="button"
-              size={"icon"}
-              variant={"ghost"}
+            <div
+              role="button"
               onClick={handleClear}
               className="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
             >
               <X className="h-4 w-4" />
-            </Button>
+            </div>
           ) : (
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           )}
