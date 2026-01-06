@@ -14,10 +14,10 @@ const Layout = async ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-slate-950 dark:via-slate-900/95 dark:to-slate-900/90">
       <DashboardHeader user={session!.user} />
 
-      <main className="container mx-auto px-6 py-8">{children}</main>
+      <main className="container mx-auto px-6 py-8 max-w-7xl">{children}</main>
     </div>
   );
 };

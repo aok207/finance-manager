@@ -23,6 +23,28 @@ import {
   CartesianGrid,
 } from "recharts";
 
+// Custom Tooltip Component for dark mode support
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-3">
+        <p className="text-sm font-medium text-slate-900 dark:text-slate-100 mb-2">{label || payload[0].name}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center gap-2 text-sm">
+            <div 
+              className="w-3 h-3 rounded-full" 
+              style={{ backgroundColor: entry.color || entry.payload?.fill }}
+            />
+            <span className="text-slate-600 dark:text-slate-400">{entry.name || "Total"}:</span>
+            <span className="font-semibold text-slate-900 dark:text-slate-100">{entry.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export type CategoryTotal = {
   id: string;
   name: string;
@@ -98,15 +120,7 @@ export default function CategoriesSection({
                   />
                 ))}
               </Pie>
-              <Tooltip
-                formatter={(value: number) => [formatCurrency(value), "Total"]}
-                contentStyle={{
-                  backgroundColor: "white",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                }}
-              />
+              <Tooltip content={<CustomTooltip />} />
             </RechartsPieChart>
           </ResponsiveContainer>
         );
@@ -135,15 +149,7 @@ export default function CategoriesSection({
                   />
                 ))}
               </Pie>
-              <Tooltip
-                formatter={(value: number) => [formatCurrency(value), "Total"]}
-                contentStyle={{
-                  backgroundColor: "white",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                }}
-              />
+              <Tooltip content={<CustomTooltip />} />
             </RechartsPieChart>
           </ResponsiveContainer>
         );
@@ -171,16 +177,7 @@ export default function CategoriesSection({
                 axisLine={false}
                 tickFormatter={formatCurrency}
               />
-              <Tooltip
-                formatter={(value: number) => [formatCurrency(value), "Total"]}
-                labelClassName="text-slate-600"
-                contentStyle={{
-                  backgroundColor: "white",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                }}
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -202,18 +199,23 @@ export default function CategoriesSection({
     }
   };
   return (
-    <Card className="shadow-sm border-0 bg-white dark:bg-slate-800">
-      <CardHeader className="pb-4">
+    <Card className="border border-slate-200/60 dark:border-slate-700/60 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-lg hover:shadow-xl dark:shadow-slate-900/50 dark:hover:shadow-slate-900/70 transition-all duration-300">
+      <CardHeader className="pb-4 border-b border-slate-100 dark:border-slate-700/50">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-slate-900 dark:text-white">
-            Categories
-          </CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 shadow-md dark:shadow-purple-900/30">
+              <PieChart className="h-5 w-5 text-white" />
+            </div>
+            <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-50">
+              Spending by Category
+            </CardTitle>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-slate-600 dark:text-slate-300"
+                className="text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <PieChart className="mr-2 h-4 w-4" />
                 {getChartTypeLabel()}
@@ -234,7 +236,7 @@ export default function CategoriesSection({
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent>{renderChart()}</CardContent>
+      <CardContent className="pt-6">{renderChart()}</CardContent>
     </Card>
   );
 }

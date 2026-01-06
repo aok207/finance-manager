@@ -39,8 +39,8 @@ export default function DashboardNavigation() {
                 key={item.name}
                 variant={"ghost"}
                 className={cn(
-                  "text-white px-2 py-1 rounded-md hover:bg-accent/20 hover:text-white transition-colors duration-200",
-                  isActive && "bg-accent/20"
+                  "text-slate-600 dark:text-slate-400 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all duration-200",
+                  isActive && "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
                 )}
               >
                 <Link href={item.href} className="flex items-center">

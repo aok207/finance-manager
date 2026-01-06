@@ -153,12 +153,15 @@ export default async function DashboardPage({
 
   return (
     <>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          Welcome Back, {session?.user.name || "User"} 👋
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold mb-3 flex items-center gap-2">
+          <span className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 dark:from-slate-100 dark:via-purple-300 dark:to-slate-100 bg-clip-text text-transparent">
+            Welcome Back, {session?.user.name || "User"}
+          </span>
+          <span className="text-4xl">👋</span>
         </h1>
-        <p className="text-slate-600 dark:text-slate-400">
-          This is your Financial Overview Report
+        <p className="text-lg text-slate-600 dark:text-slate-300">
+          Here's your financial overview and insights
         </p>
       </div>
 
@@ -169,11 +172,11 @@ export default async function DashboardPage({
         dateRange={{ from, to }}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
         <FinancialOverview metrics={financialMetrics} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TransactionsSection transactions={transactions} />
         <CategoriesSection categories={categoryTotals} />
       </div>

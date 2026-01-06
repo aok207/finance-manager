@@ -117,12 +117,12 @@ export default function FilterDropdowns({
   };
 
   return (
-    <div className="flex flex-wrap gap-4 mb-6">
+    <div className="flex flex-wrap gap-3 mb-8">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 shadow-sm"
           >
             <Wallet className="mr-2 h-4 w-4" />
             {accountDisplayName}
@@ -158,7 +158,7 @@ export default function FilterDropdowns({
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 shadow-sm"
           >
             <Calendar className="mr-2 h-4 w-4" />
             {getDateRangeDisplayText()}
