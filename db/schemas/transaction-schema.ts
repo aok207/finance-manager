@@ -50,4 +50,4 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
   }),
 }));
 
-export type BalanceAccount = typeof transactions.$inferSelect;
+export type Transaction = typeof transactions.$inferSelect;

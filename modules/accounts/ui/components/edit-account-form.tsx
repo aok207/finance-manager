@@ -18,7 +18,6 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-import { BalanceAccount } from "@/db/schemas/account-schema";
 
 const accountFormSchema = z.object({
   name: z

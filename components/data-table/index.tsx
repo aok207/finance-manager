@@ -163,3 +163,4 @@ const DataTable = <TData, TValue>({
 };
 
 export default DataTable;
+export { DataTable };

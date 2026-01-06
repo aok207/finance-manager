@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
 import { EditAccountForm } from "./edit-account-form";
-import { BalanceAccount } from "@/db/schemas/account-schema";
 import {
   Sheet,
   SheetContent,

@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createAccount } from "@/modules/accounts/api/actions";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,6 +15,8 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
+import { useFormSubmission } from "@/lib/hooks/use-form-submission";
+import { Loader2 } from "lucide-react";
 
 const accountFormSchema = z.object({
   name: z
@@ -36,9 +35,6 @@ interface AddAccountFormProps {
 }
 
 export function AddAccountForm({ onClose }: AddAccountFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
@@ -47,30 +43,23 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
     },
   });
 
-  const onSubmit = async (values: AccountFormValues) => {
-    setIsLoading(true);
-
-    try {
-      const result = await createAccount(values.name, values.initialBalance);
-
-      if (result.success) {
-        toast.success("Account created successfully");
-        form.reset();
-        onClose();
-        router.refresh();
-      } else {
-        toast.error(result.error || "Failed to create account");
-      }
-    } catch {
-      toast.error("An unexpected error occurred");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { isLoading, handleSubmit } = useFormSubmission({
+    action: async (values: AccountFormValues) =>
+      createAccount(values.name, values.initialBalance),
+    onSuccess: () => {
+      form.reset();
+      onClose();
+    },
+    successMessage: "Account created successfully",
+    errorMessage: "Failed to create account",
+  });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="space-y-4"
+      >
         <FormField
           control={form.control}
           name="name"
@@ -104,7 +93,9 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
                   placeholder="0"
                   disabled={isLoading}
                   {...field}
-                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    field.onChange(parseFloat(e.target.value) || 0)
+                  }
                 />
               </FormControl>
               <FormMessage />
@@ -122,6 +113,7 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
+            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             {isLoading ? "Creating..." : "Create Account"}
           </Button>
         </div>

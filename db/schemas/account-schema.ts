@@ -35,4 +35,4 @@ export const accountsRelations = relations(balanceAccounts, ({ many }) => ({
   transactions: many(transactions),
 }));
 
-export type BalanceAccount = typeof balanceAccounts.$inferSelect;
+export type Account = typeof balanceAccounts.$inferSelect;
