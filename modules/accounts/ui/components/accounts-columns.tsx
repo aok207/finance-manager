@@ -5,8 +5,9 @@ import { BalanceAccount } from "@/db/schemas/account-schema";
 import { ColumnDef } from "@tanstack/react-table";
 import ColumnActions from "./column-actions";
 import { Checkbox } from "@/components/ui/checkbox";
+import { formatCurrency } from "@/lib/format";
 
-export const columns: ColumnDef<{ id: string; name: string }>[] = [
+export const columns: ColumnDef<{ id: string; name: string; balance: number }>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -34,6 +35,20 @@ export const columns: ColumnDef<{ id: string; name: string }>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
+  },
+  {
+    accessorKey: "balance",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Balance" />
+    ),
+    cell: ({ row }) => {
+      const balance = row.original.balance;
+      return (
+        <span className={balance >= 0 ? "text-green-600" : "text-red-600"}>
+          {formatCurrency(balance)}
+        </span>
+      );
+    },
   },
   {
     header: "Actions",

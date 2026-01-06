@@ -16,6 +16,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 
 const accountFormSchema = z.object({
@@ -25,6 +26,7 @@ const accountFormSchema = z.object({
     .min(2, "Account name must be at least 2 characters")
     .max(50, "Account name must be less than 50 characters")
     .trim(),
+  initialBalance: z.number(),
 });
 
 type AccountFormValues = z.infer<typeof accountFormSchema>;
@@ -41,6 +43,7 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
       name: "",
+      initialBalance: 0,
     },
   });
 
@@ -48,7 +51,7 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
     setIsLoading(true);
 
     try {
-      const result = await createAccount(values.name);
+      const result = await createAccount(values.name, values.initialBalance);
 
       if (result.success) {
         toast.success("Account created successfully");
@@ -58,7 +61,7 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
       } else {
         toast.error(result.error || "Failed to create account");
       }
-    } catch (error) {
+    } catch {
       toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -79,6 +82,29 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
                   placeholder="Enter account name"
                   disabled={isLoading}
                   {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="initialBalance"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Initial Balance</FormLabel>
+              <FormDescription>
+                Enter the starting balance for this account (optional)
+              </FormDescription>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  disabled={isLoading}
+                  {...field}
+                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                 />
               </FormControl>
               <FormMessage />

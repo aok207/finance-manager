@@ -16,7 +16,7 @@ import {
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 interface EditAccountDialogProps {
-  account: { id: string; name: string };
+  account: { id: string; name: string; balance: number };
 }
 
 export function EditAccountDialog({ account }: EditAccountDialogProps) {

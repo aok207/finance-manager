@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   uniqueIndex,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
@@ -15,6 +16,7 @@ export const balanceAccounts = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     name: varchar("name").notNull(),
+    balance: doublePrecision("balance").notNull().default(0),
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),

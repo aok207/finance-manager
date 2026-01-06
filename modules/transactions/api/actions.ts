@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { eq, and, inArray } from "drizzle-orm";
+import { updateAccountBalance } from "@/modules/accounts/api/actions";
 
 export async function createTransaction({
   amount,
@@ -44,7 +45,11 @@ export async function createTransaction({
       })
       .returning();
 
+    // Update account balance
+    await updateAccountBalance(accountId, amount, session.user.id);
+
     revalidatePath("/transactions");
+    revalidatePath("/accounts");
     return { success: true, transaction: newTransaction[0] };
   } catch (error) {
     console.error("Error creating transaction:", error);
@@ -79,6 +84,19 @@ export async function updateTransaction(
       throw new Error("Unauthorized");
     }
 
+    // Get the old transaction to calculate balance difference
+    const oldTransaction = await db
+      .select()
+      .from(transactions)
+      .where(
+        and(eq(transactions.id, id), eq(transactions.userId, session.user.id))
+      )
+      .limit(1);
+
+    if (!oldTransaction.length) {
+      throw new Error("Transaction not found");
+    }
+
     const updatedTransaction = await db
       .update(transactions)
       .set({
@@ -95,7 +113,25 @@ export async function updateTransaction(
       )
       .returning();
 
+    // Update account balances
+    const old = oldTransaction[0];
+    
+    // If account changed, update both old and new accounts
+    if (old.accountId !== accountId) {
+      // Reverse old transaction from old account
+      await updateAccountBalance(old.accountId, -old.amount, session.user.id);
+      // Add new transaction to new account
+      await updateAccountBalance(accountId, amount, session.user.id);
+    } else {
+      // Same account, just update the difference
+      const difference = amount - old.amount;
+      if (difference !== 0) {
+        await updateAccountBalance(accountId, difference, session.user.id);
+      }
+    }
+
     revalidatePath("/transactions");
+    revalidatePath("/accounts");
     return { success: true, transaction: updatedTransaction[0] };
   } catch (error) {
     console.error("Error updating transaction:", error);
@@ -113,13 +149,34 @@ export async function deleteTransaction(id: string) {
       throw new Error("Unauthorized");
     }
 
+    // Get the transaction before deleting to update account balance
+    const transaction = await db
+      .select()
+      .from(transactions)
+      .where(
+        and(eq(transactions.id, id), eq(transactions.userId, session.user.id))
+      )
+      .limit(1);
+
+    if (!transaction.length) {
+      throw new Error("Transaction not found");
+    }
+
     await db
       .delete(transactions)
       .where(
         and(eq(transactions.id, id), eq(transactions.userId, session.user.id))
       );
 
+    // Reverse the transaction amount from account balance
+    await updateAccountBalance(
+      transaction[0].accountId,
+      -transaction[0].amount,
+      session.user.id
+    );
+
     revalidatePath("/transactions");
+    revalidatePath("/accounts");
     return { success: true };
   } catch (error) {
     console.error("Error deleting transaction:", error);
@@ -137,6 +194,17 @@ export async function bulkDeleteTransactions(ids: string[]) {
       throw new Error("Unauthorized");
     }
 
+    // Get all transactions before deleting to update account balances
+    const transactionsToDelete = await db
+      .select()
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.userId, session.user.id),
+          inArray(transactions.id, ids)
+        )
+      );
+
     await db
       .delete(transactions)
       .where(
@@ -146,7 +214,17 @@ export async function bulkDeleteTransactions(ids: string[]) {
         )
       );
 
+    // Update account balances for each deleted transaction
+    for (const transaction of transactionsToDelete) {
+      await updateAccountBalance(
+        transaction.accountId,
+        -transaction.amount,
+        session.user.id
+      );
+    }
+
     revalidatePath("/transactions");
+    revalidatePath("/accounts");
     return { success: true };
   } catch (error) {
     console.error("Error bulk deleting transactions:", error);

@@ -85,7 +85,11 @@ export default async function DashboardPage({
   const expenses = transactions
     .filter((t) => t.amount < 0)
     .reduce((sum, t) => sum + t.amount, 0);
-  const remaining = income + expenses;
+  
+  // Calculate total balance from all accounts (or filtered account)
+  const totalBalance = accountId 
+    ? accounts.find(acc => acc.id === accountId)?.balance || 0
+    : accounts.reduce((sum, acc) => sum + acc.balance, 0);
 
   // Calculate previous period metrics
   const previousIncome = previousTransactions
@@ -94,7 +98,10 @@ export default async function DashboardPage({
   const previousExpenses = previousTransactions
     .filter((t) => t.amount < 0)
     .reduce((sum, t) => sum + t.amount, 0);
-  const previousRemaining = previousIncome + previousExpenses;
+  
+  // Previous total balance is current minus the change in this period
+  const periodChange = income + expenses;
+  const previousTotalBalance = totalBalance - periodChange;
 
   // Helper function to calculate percentage change
   const calculateChange = (
@@ -123,9 +130,9 @@ export default async function DashboardPage({
   // Prepare metrics for FinancialOverview
   const financialMetrics: FinancialMetric[] = [
     {
-      title: "Remaining",
-      amount: remaining,
-      ...calculateChange(remaining, previousRemaining),
+      title: "Total Balance",
+      amount: totalBalance,
+      ...calculateChange(totalBalance, previousTotalBalance),
     },
     {
       title: "Income",

@@ -5,9 +5,9 @@ import { balanceAccounts } from "@/db/schemas/account-schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, sql } from "drizzle-orm";
 
-export async function createAccount(name: string) {
+export async function createAccount(name: string, initialBalance?: number) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -21,6 +21,7 @@ export async function createAccount(name: string) {
       .insert(balanceAccounts)
       .values({
         name,
+        balance: initialBalance ?? 0,
         userId: session.user.id,
       })
       .returning();
@@ -33,7 +34,7 @@ export async function createAccount(name: string) {
   }
 }
 
-export async function updateAccount(id: string, name: string) {
+export async function updateAccount(id: string, name: string, balance?: number) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -43,12 +44,18 @@ export async function updateAccount(id: string, name: string) {
       throw new Error("Unauthorized");
     }
 
+    const updateData: { name: string; updatedAt: Date; balance?: number } = {
+      name,
+      updatedAt: new Date(),
+    };
+
+    if (balance !== undefined) {
+      updateData.balance = balance;
+    }
+
     const updatedAccount = await db
       .update(balanceAccounts)
-      .set({
-        name,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(
         and(
           eq(balanceAccounts.id, id),
@@ -116,5 +123,32 @@ export async function bulkDeleteAccounts(ids: string[]) {
   } catch (error) {
     console.error("Error bulk deleting accounts:", error);
     return { success: false, error: "Failed to bulk delete accounts" };
+  }
+}
+
+export async function updateAccountBalance(
+  accountId: string,
+  balanceChange: number,
+  userId: string
+) {
+  try {
+    const result = await db
+      .update(balanceAccounts)
+      .set({
+        balance: sql`${balanceAccounts.balance} + ${balanceChange}`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(balanceAccounts.id, accountId),
+          eq(balanceAccounts.userId, userId)
+        )
+      )
+      .returning();
+
+    return { success: true, account: result[0] };
+  } catch (error) {
+    console.error("Error updating account balance:", error);
+    throw error;
   }
 }

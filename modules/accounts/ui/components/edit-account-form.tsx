@@ -16,6 +16,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { BalanceAccount } from "@/db/schemas/account-schema";
 
@@ -26,12 +27,13 @@ const accountFormSchema = z.object({
     .min(2, "Account name must be at least 2 characters")
     .max(50, "Account name must be less than 50 characters")
     .trim(),
+  balance: z.number(),
 });
 
 type AccountFormValues = z.infer<typeof accountFormSchema>;
 
 interface EditAccountFormProps {
-  account: { id: string; name: string };
+  account: { id: string; name: string; balance: number };
   onClose: () => void;
 }
 
@@ -43,6 +45,7 @@ export function EditAccountForm({ account, onClose }: EditAccountFormProps) {
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
       name: account.name,
+      balance: account.balance,
     },
   });
 
@@ -50,7 +53,7 @@ export function EditAccountForm({ account, onClose }: EditAccountFormProps) {
     setIsLoading(true);
 
     try {
-      const result = await updateAccount(account.id, values.name);
+      const result = await updateAccount(account.id, values.name, values.balance);
 
       if (result.success) {
         toast.success("Account updated successfully");
@@ -59,7 +62,7 @@ export function EditAccountForm({ account, onClose }: EditAccountFormProps) {
       } else {
         toast.error(result.error || "Failed to update account");
       }
-    } catch (error) {
+    } catch {
       toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -80,6 +83,29 @@ export function EditAccountForm({ account, onClose }: EditAccountFormProps) {
                   placeholder="Enter account name"
                   disabled={isLoading}
                   {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="balance"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Current Balance</FormLabel>
+              <FormDescription>
+                Update the current balance for this account
+              </FormDescription>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  disabled={isLoading}
+                  {...field}
+                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                 />
               </FormControl>
               <FormMessage />

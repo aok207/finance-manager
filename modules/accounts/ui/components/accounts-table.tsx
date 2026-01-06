@@ -7,7 +7,7 @@ import { bulkDeleteAccounts } from "../../api/actions";
 import { toast } from "sonner";
 
 interface AccountsTableProps {
-  accounts: { id: string; name: string }[];
+  accounts: { id: string; name: string; balance: number }[];
 }
 
 function AccountsTable({ accounts }: AccountsTableProps) {

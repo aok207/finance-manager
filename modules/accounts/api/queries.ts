@@ -8,7 +8,7 @@ import { headers } from "next/headers";
 
 export async function getAccounts(): Promise<{
   success: boolean;
-  data?: { id: string; name: string }[];
+  data?: { id: string; name: string; balance: number }[];
   error?: string;
 }> {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -21,7 +21,11 @@ export async function getAccounts(): Promise<{
   }
 
   const accounts = await db
-    .select({ id: balanceAccounts.id, name: balanceAccounts.name })
+    .select({ 
+      id: balanceAccounts.id, 
+      name: balanceAccounts.name,
+      balance: balanceAccounts.balance 
+    })
     .from(balanceAccounts)
     .where(eq(balanceAccounts.userId, session.user.id))
     .orderBy(balanceAccounts.name);

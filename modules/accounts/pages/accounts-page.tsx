@@ -3,7 +3,7 @@ import AccountsTable from "../ui/components/accounts-table";
 import { AddAccountDialog } from "../ui/components/add-account-dialog";
 
 interface AccountsPageProps {
-  accounts: { id: string; name: string }[];
+  accounts: { id: string; name: string; balance: number }[];
 }
 
 const AccountsPage = ({ accounts }: AccountsPageProps) => {

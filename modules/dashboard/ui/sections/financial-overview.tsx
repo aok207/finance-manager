@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const metricIcons: Record<
-  "Remaining" | "Income" | "Expenses",
+  "Total Balance" | "Income" | "Expenses",
   {
     icon: React.ComponentType<any>;
     iconColor: string;
@@ -17,7 +17,7 @@ const metricIcons: Record<
     accentColor: string;
   }
 > = {
-  Remaining: {
+  "Total Balance": {
     icon: PiggyBank,
     iconColor: "text-white",
     bgGradient: "from-violet-500 to-purple-600",
@@ -38,7 +38,7 @@ const metricIcons: Record<
 };
 
 export type FinancialMetric = {
-  title: "Remaining" | "Income" | "Expenses";
+  title: "Total Balance" | "Income" | "Expenses";
   amount: number;
   change: string;
   changeType: string;
